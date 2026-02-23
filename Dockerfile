@@ -1,29 +1,32 @@
-FROM node:18-alpine
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# git is required for GitHub fork dependencies (tsdav, tsdav-utils)
+RUN apk add --no-cache git
 
-# Install dependencies
-RUN npm ci --only=production
+COPY package*.json .npmrc ./
+RUN npm ci --omit=dev
 
-# Copy source code
-COPY src ./src
+# --- Production image ---
+FROM node:22-alpine
+
+WORKDIR /app
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
+    adduser -S nodejs -u 1001
 
+COPY --from=build /app/node_modules ./node_modules
+COPY package.json ./
+COPY src ./src
+
+RUN chown -R nodejs:nodejs /app
 USER nodejs
 
-# Expose port
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"
+    CMD node -e "fetch('http://localhost:3000/health').then(r => { process.exit(r.ok ? 0 : 1) }).catch(() => process.exit(1))"
 
-# Start server (HTTP mode for Docker/remote deployments)
 CMD ["node", "src/server-http.js"]
