@@ -38,6 +38,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '::';
 
 // CORS Configuration
 const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
@@ -383,8 +384,9 @@ async function start() {
   logger.info('Tool call logger initialized');
 
   // Start Express server
-  httpServer = app.listen(PORT, () => {
+  httpServer = app.listen(PORT, HOST, () => {
     logger.info({
+      host: HOST,
       port: PORT,
       url: `http://localhost:${PORT}`,
       mcpEndpoint: `http://localhost:${PORT}/mcp`,

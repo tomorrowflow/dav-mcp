@@ -4,13 +4,13 @@ services:
     container_name: dav-mcp-server
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3040:3040"
     environment:
       - NODE_ENV=production
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r => { process.exit(r.ok ? 0 : 1) }).catch(() => process.exit(1))"]
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3040/health').then(r => { process.exit(r.ok ? 0 : 1) }).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -26,3 +26,4 @@ services:
 networks:
   mcp-network:
     driver: bridge
+    enable_ipv6: true

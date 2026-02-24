@@ -32,9 +32,13 @@ const isHttpMode = args.includes('--http');
 const portArg = args.find(a => a.startsWith('--port='));
 
 if (isHttpMode) {
-  // HTTP mode - set port and load HTTP server
+  // HTTP mode - set port/host and load HTTP server
   if (portArg) {
     process.env.PORT = portArg.split('=')[1];
+  }
+  const hostArg = args.find(a => a.startsWith('--host='));
+  if (hostArg) {
+    process.env.HOST = hostArg.split('=')[1];
   }
   // Dynamic import of HTTP server (it will start itself)
   import('./server-http.js');
