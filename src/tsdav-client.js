@@ -22,6 +22,7 @@ class TsdavClientManager {
    *
    * @param {Object} config - Client configuration
    * @param {string} config.serverUrl - CalDAV/CardDAV server URL
+   * @param {string} [config.cardDavServerUrl] - Optional separate CardDAV server URL (if different from serverUrl)
    * @param {string} config.authMethod - 'Basic' or 'OAuth' (note: tsdav uses 'Oauth')
    *
    * For Basic Auth:
@@ -86,9 +87,9 @@ class TsdavClientManager {
       defaultAccountType: 'caldav',
     });
 
-    // CardDAV Client
+    // CardDAV Client (supports optional separate server URL)
     this.cardDavClient = new DAVClient({
-      serverUrl: config.serverUrl,
+      serverUrl: config.cardDavServerUrl || config.serverUrl,
       credentials: {
         username: config.username,
         password: config.password,
@@ -143,11 +144,11 @@ class TsdavClientManager {
       defaultAccountType: 'caldav',
     });
 
-    // CardDAV Client with OAuth
+    // CardDAV Client with OAuth (supports optional separate server URL)
     // Note: Google Calendar doesn't support CardDAV, but we initialize it anyway
     // for compatibility with other OAuth2 CalDAV/CardDAV servers
     this.cardDavClient = new DAVClient({
-      serverUrl: config.serverUrl,
+      serverUrl: config.cardDavServerUrl || config.serverUrl,
       credentials: oauthCredentials,
       authMethod: 'Oauth',
       defaultAccountType: 'carddav',

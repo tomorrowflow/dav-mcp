@@ -100,6 +100,7 @@ async function startStdioServer() {
 
       await tsdavManager.initialize({
         serverUrl: process.env.CALDAV_SERVER_URL,
+        cardDavServerUrl: process.env.CARDDAV_SERVER_URL,
         authMethod: 'Basic',
         username: process.env.CALDAV_USERNAME,
         password: process.env.CALDAV_PASSWORD,
